@@ -1,26 +1,21 @@
-# Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
+# Compiled class files
+*.class
 
-# Test binary, built with `go test -c`
-*.test
+# Package files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
 
-# Output of the go coverage tool
-*.out
-coverage.out
-
-# Dependency directories
-vendor/
-
-# Go workspace file
-go.work
+# Maven
+target/
 
 # IDE-specific files
 .idea/
 .vscode/
+*.iml
 *.swp
 *.swo
 *~
@@ -28,3 +23,6 @@ go.work
 # OS-specific files
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log

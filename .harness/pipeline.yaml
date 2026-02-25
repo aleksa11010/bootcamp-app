@@ -1,0 +1,62 @@
+pipeline:
+  name: sample-java-app-build
+  identifier: sample_java_app_build
+  projectIdentifier: default
+  orgIdentifier: default
+  stages:
+    - stage:
+        name: Build and Test
+        identifier: build_and_test
+        type: CI
+        spec:
+          cloneCodebase: true
+          infrastructure:
+            type: Cloud
+            spec:
+              os: Linux
+              arch: Amd64
+          execution:
+            steps:
+              # Step 1: Run Tests with Test Intelligence
+              - step:
+                  type: RunTests
+                  name: Run Tests with Intelligence
+                  identifier: run_tests_with_ti
+                  spec:
+                    language: Java
+                    buildTool: Maven
+                    args: test
+                    packages: com.sample.taskmanager
+                    runOnlySelectedTests: true  # <-- Enables Test Intelligence
+                    reports:
+                      type: JUnit
+                      spec:
+                        paths:
+                          - "target/surefire-reports/*.xml"
+
+              # Step 2: Run Checkstyle
+              - step:
+                  type: Run
+                  name: Checkstyle
+                  identifier: checkstyle
+                  spec:
+                    shell: Sh
+                    command: mvn checkstyle:check
+
+              # Step 3: Run PMD
+              - step:
+                  type: Run
+                  name: PMD
+                  identifier: pmd
+                  spec:
+                    shell: Sh
+                    command: mvn pmd:check
+
+              # Step 4: Run SpotBugs
+              - step:
+                  type: Run
+                  name: SpotBugs
+                  identifier: spotbugs
+                  spec:
+                    shell: Sh
+                    command: mvn compile spotbugs:check

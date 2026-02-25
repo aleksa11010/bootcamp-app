@@ -1,133 +1,103 @@
-# Sample Go Application — Task Manager
+# Sample Java Application — Task Manager
 
-A simple, thread-safe task manager library demonstrating Go best practices including unit testing, table-driven tests, concurrency safety, and linting.
+A simple task manager library demonstrating Java best practices including JUnit 5 testing, parameterized tests, nested test classes, and linting with Checkstyle/PMD/SpotBugs.
+
+**Note:** One test is deliberately failing (`statsReturnsZeroForEmpty`) to demonstrate test failure reporting.
 
 ## Project Structure
 
 ```
 sample-go-app/
-├── main.go                      # CLI entry point
-├── go.mod                       # Go module definition
-├── .golangci.yml                # golangci-lint configuration
+├── pom.xml                                          # Maven build config
+├── checkstyle.xml                                   # Checkstyle rules
 ├── README.md
-└── taskmanager/
-    ├── task.go                  # Task, Priority, Status types
-    ├── task_test.go             # Tests for task types
-    ├── manager.go               # Manager with CRUD operations
-    └── manager_test.go          # Tests for Manager
+├── .harness/pipeline.yaml                           # Harness CI pipeline
+└── src/
+    ├── main/java/com/sample/taskmanager/
+    │   ├── App.java                                 # CLI entry point
+    │   ├── Task.java                                # Task entity
+    │   ├── TaskManager.java                         # Manager with CRUD operations
+    │   ├── TaskNotFoundException.java               # Custom exception
+    │   ├── Priority.java                            # Priority enum
+    │   ├── Status.java                              # Status enum
+    │   └── Stats.java                               # Aggregate statistics
+    └── test/java/com/sample/taskmanager/
+        ├── TaskTest.java                            # Tests for Task/Priority/Status
+        └── TaskManagerTest.java                     # Tests for TaskManager (1 fails)
 ```
 
 ## Running
 
 ```bash
-go run .
+mvn compile exec:java -Dexec.mainClass="com.sample.taskmanager.App"
 ```
 
 ## Testing
 
 ```bash
 # Run all tests
-go test ./...
+mvn test
 
-# Run with verbose output
-go test -v ./...
+# Run with verbose/debug output
+mvn test -X
 
-# Run with race detector
-go test -race ./...
+# Run a specific test class
+mvn test -Dtest=TaskManagerTest
 
-# Run with coverage
-go test -cover ./...
+# Run a specific test method
+mvn test -Dtest="TaskManagerTest#statsReturnsZeroForEmpty"
 
-# Generate coverage report
-go test -coverprofile=coverage.out ./...
-go tool cover -html=coverage.out
+# JUnit XML reports are automatically generated at:
+# target/surefire-reports/TEST-*.xml
 ```
 
-## Recommended Go Linters
-
-### 1. [golangci-lint](https://golangci-lint.run/) (Meta-linter — **Start Here**)
-
-The most popular Go linter aggregator. Runs 50+ linters in parallel. This project includes a `.golangci.yml` config.
+## Linting
 
 ```bash
-# Install
-go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-# Or via Homebrew
-brew install golangci-lint
+# Run Checkstyle
+mvn checkstyle:check
 
-# Run
-golangci-lint run ./...
+# Run PMD
+mvn pmd:check
+
+# Run SpotBugs (requires compiled classes)
+mvn compile spotbugs:check
+
+# Run all linters at once
+mvn checkstyle:check pmd:check compile spotbugs:check
 ```
 
-### 2. [staticcheck](https://staticcheck.dev/)
+## Recommended Java Linters
 
-Advanced static analysis with checks for bugs, performance, and style.
+### 1. [Checkstyle](https://checkstyle.org/) — Code Style Enforcement
 
-```bash
-go install honnef.co/go/tools/cmd/staticcheck@latest
-staticcheck ./...
-```
+Enforces naming conventions, formatting, imports, complexity limits. This project includes a `checkstyle.xml` config.
 
-### 3. [go vet](https://pkg.go.dev/cmd/vet)
+### 2. [PMD](https://pmd.github.io/) — Static Code Analysis
 
-Built into the Go toolchain. Catches common mistakes like printf format mismatches and unreachable code.
+Finds common bugs, dead code, suboptimal code, and overly complex expressions. Configured in `pom.xml`.
 
-```bash
-go vet ./...
-```
+### 3. [SpotBugs](https://spotbugs.github.io/) — Bug Detection
 
-### 4. [errcheck](https://github.com/kisielk/errcheck)
+Successor to FindBugs. Detects potential bugs via bytecode analysis (null pointer dereferences, infinite loops, etc.).
 
-Ensures error return values are always checked.
+### 4. [Error Prone](https://errorprone.info/) — Compile-Time Bug Detection
 
-```bash
-go install github.com/kisielk/errcheck@latest
-errcheck ./...
-```
+Google's Java compiler plugin that catches common mistakes at compile time.
 
-### 5. [gosec](https://github.com/securego/gosec)
+### 5. [SonarLint](https://www.sonarsource.com/products/sonarlint/) — IDE Integration
 
-Security-focused linter that finds common vulnerabilities (SQL injection, hardcoded credentials, etc.).
+Real-time linting in your IDE with 600+ rules for Java.
 
-```bash
-go install github.com/securego/gosec/v2/cmd/gosec@latest
-gosec ./...
-```
+## Harness CI Commands
 
-### 6. [revive](https://github.com/mgechev/revive)
+Use these commands in your Harness pipeline steps:
 
-Drop-in replacement for the deprecated `golint`, with configurable rules.
-
-```bash
-go install github.com/mgechev/revive@latest
-revive ./...
-```
-
-### 7. [gofumpt](https://github.com/mvdan/gofumpt)
-
-Stricter version of `gofmt` that enforces additional formatting rules.
-
-```bash
-go install mvdan.cc/gofumpt@latest
-gofumpt -w .
-```
-
-### 8. [gocritic](https://github.com/go-critic/go-critic)
-
-Opinionated meta-linter with checks for style, performance, and common bugs.
-
-```bash
-go install github.com/go-critic/go-critic/cmd/gocritic@latest
-gocritic check ./...
-```
-
-## Quick Start for Linting
-
-The easiest approach is to just use **golangci-lint** which bundles most of the above:
-
-```bash
-brew install golangci-lint
-golangci-lint run ./...
-```
-
-The `.golangci.yml` in this project already enables a curated set of linters.
+| Purpose | Command |
+|---|---|
+| **Run tests** | `mvn test` |
+| **Run tests (JUnit XML output)** | `mvn test` (Surefire generates XML in `target/surefire-reports/`) |
+| **Run Checkstyle** | `mvn checkstyle:check` |
+| **Run PMD** | `mvn pmd:check` |
+| **Run SpotBugs** | `mvn compile spotbugs:check` |
+| **Run everything** | `mvn clean verify checkstyle:check pmd:check spotbugs:check` |
