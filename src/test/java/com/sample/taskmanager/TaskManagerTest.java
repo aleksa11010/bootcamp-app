@@ -212,19 +212,14 @@ class TaskManagerTest {
             assertEquals(1, stats.getCompleted());
         }
 
-        // ============================================================
-        // DELIBERATELY FAILING TEST
-        // This test expects the wrong count to demonstrate test failure
-        // ============================================================
         @Test
-        @DisplayName("Stats returns zero for empty manager - INTENTIONAL FAILURE")
+        @DisplayName("Stats returns zero for empty manager")
         void statsReturnsZeroForEmpty() {
             Stats stats = tm.stats();
 
             assertEquals(0, stats.getTotal());
             assertEquals(0, stats.getPending());
-            // BUG: asserting completed == 1 on an empty manager — this WILL fail
-            assertEquals(1, stats.getCompleted(), "INTENTIONAL FAILURE: expected 1 completed but manager is empty");
+            assertEquals(0, stats.getCompleted());
         }
     }
 }
