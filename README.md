@@ -26,10 +26,33 @@ sample-go-app/
         └── TaskManagerTest.java                     # Tests for TaskManager (1 fails)
 ```
 
+## Building
+
+```bash
+# Clean and compile
+mvn clean compile
+
+# Package as JAR
+mvn clean package
+
+# Package and skip tests
+mvn clean package -DskipTests
+
+# Install to local Maven repository
+mvn clean install
+
+# The packaged JAR will be at:
+# target/taskmanager-1.0-SNAPSHOT.jar
+```
+
 ## Running
 
 ```bash
+# Run via Maven
 mvn compile exec:java -Dexec.mainClass="com.sample.taskmanager.App"
+
+# Or run the packaged JAR directly
+java -jar target/taskmanager-1.0-SNAPSHOT.jar
 ```
 
 ## Testing

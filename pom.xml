@@ -81,8 +81,7 @@
                 <configuration>
                     <targetJdk>17</targetJdk>
                     <rulesets>
-                        <ruleset>/category/java/bestpractices.xml</ruleset>
-                        <ruleset>/category/java/errorprone.xml</ruleset>
+                        <ruleset>pmd-ruleset.xml</ruleset>
                     </rulesets>
                 </configuration>
             </plugin>

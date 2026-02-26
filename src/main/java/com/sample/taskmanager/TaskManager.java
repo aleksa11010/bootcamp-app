@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 public class TaskManager {
 
+    private static final int MIN_VALID_ID = 1;
+
     private final Map<Integer, Task> tasks = new LinkedHashMap<>();
     private int nextId = 1;
 
@@ -28,7 +30,7 @@ public class TaskManager {
     }
 
     public Task get(int id) {
-        if (id <= 0) {
+        if (id < MIN_VALID_ID) {
             throw new IllegalArgumentException("Invalid task ID");
         }
         Task task = tasks.get(id);
@@ -47,7 +49,7 @@ public class TaskManager {
     }
 
     public void delete(int id) {
-        if (id <= 0) {
+        if (id < MIN_VALID_ID) {
             throw new IllegalArgumentException("Invalid task ID");
         }
         if (tasks.remove(id) == null) {
